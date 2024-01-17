@@ -1,3 +1,14 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework.routers import DefaultRouter
 
-# Create your views here.
+from .models import Game
+from .serializers import GameSerializer
+
+
+class GameView(viewsets.ModelViewSet):
+    serializer_class = GameSerializer
+    queryset = Game.objects.all()
+
+
+router = DefaultRouter()
+router.register('', GameView, basename='games')
