@@ -4,8 +4,8 @@ from player.models import Player
 
 
 TOKEN_CHOICES = {
-    'X': 'Cross',
-    'O': 'Circle'
+    'X': 'X',
+    'O': 'O'
 }
 
 
@@ -47,13 +47,3 @@ class Game(models.Model):
         new_board = list(self.board)
         new_board[3 * column + row] = token
         self.board = "".join(new_board)
-
-    def clean(self):
-        # Custom validation to check the number of players
-        if self.players.count() != 2:
-            raise ValidationError("A game must have exactly 2 players.")
-
-    def save(self, *args, **kwargs):
-        '''Save overwite'''
-        self.full_clean()  # Run full validation before saving
-        super().save(*args, **kwargs)
