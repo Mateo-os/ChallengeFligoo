@@ -11,4 +11,4 @@ class PlayerView(viewsets.ModelViewSet):
 
 
 router = DefaultRouter()
-router.register('', PlayerView, basename='players')
+router.register(r"players", PlayerView, basename="player")
