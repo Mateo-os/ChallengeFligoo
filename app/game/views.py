@@ -2,10 +2,9 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
-
 from player.models import Player
 
-from .models import Game
+from .models import Game, BLANK
 from .serializers import GameSerializer, PlayRequestSerializer
 
 
@@ -50,7 +49,7 @@ class GameView(viewsets.ModelViewSet):
         if not (0 <= row <= 8 and 0 <= column <= 8):
             return Response({"error": "Row and column value must be between 1 and 9"})
 
-        if game.board[3 * column + row] != " ":
+        if game.board[3 * column + row] != BLANK:
             return Response(
                 {"error": "Invalid move. Cell already occupied."}, status=400
             )
