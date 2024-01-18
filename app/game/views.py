@@ -5,18 +5,24 @@ from rest_framework.routers import DefaultRouter
 from player.models import Player
 
 from .models import Game, BLANK
-from .serializers import GameSerializer, PlayRequestSerializer
+from .serializers import GameSerializer, PlayRequestSerializer, PlayResponseSerializer
 
 
 class GameView(viewsets.ModelViewSet):
     serializer_class = GameSerializer
     queryset = Game.objects.all()
 
+    def create_response(self, game, message, code):
+        response_serializer = PlayResponseSerializer(game)
+        data = response_serializer.data
+        data["message"] = message
+        return Response(data, code)
+
     @action(detail=True, methods=["post", "get"])
     def play(self, request, pk=None):
         game: Game = self.get_object()
         if not game.active:
-            return Response({"error": "This game has ended"}, 400)
+            return self.create_response(game, "This game has ended", 200)
         # Validate the incoming data using PlayRequestSerializer
         serializer = PlayRequestSerializer(data=request.data)
         if not serializer.is_valid():
@@ -39,20 +45,21 @@ class GameView(viewsets.ModelViewSet):
             return Response({"error": "Player not in game"}, 400)
 
         # Check if it's the player's turn
-        if game.turn % 2 == 0 and player != game.players.all()[0]:
-            return Response({"error": "Not the player's turn to move."}, status=400)
-        elif game.turn % 2 == 1 and player != game.players.all()[1]:
-            return Response({"error": "Not the player's turn to move."}, status=400)
+        turn_parity = game.turn % 2
+        if player != game.players.all()[turn_parity]:
+            return self.create_response(game, "Is not this players turn to move!", 200)
 
         # Check if the move is valid
-        row = validated_data["row"] - 1
-        column = request.data["column"] - 1
+        row = int(validated_data["row"]) - 1
+        column = int(request.data["column"]) - 1
         if not (0 <= row <= 8 and 0 <= column <= 8):
-            return Response({"error": "Row and column value must be between 1 and 9"})
+            return self.create_response(
+                game, "Row and column value must be between 1 and 9", 00
+            )
 
         if game.board[3 * row + column] != BLANK:
-            return Response(
-                {"error": "Invalid move. Cell already occupied."}, status=400
+            return self.create_response(
+                game, "Invalid move. Cell already occupied.", status=200
             )
 
         # Make the move
@@ -61,18 +68,18 @@ class GameView(viewsets.ModelViewSet):
         game.save()
 
         # Check for game over conditions
+        message = ""
         if game.is_win_state():
             game.active = False
             game.save()
-            return Response({"message": f"Player {player.name} wins!"}, status=200)
+            message = f"Player {player.name} wins!"
         elif game.is_full():
             game.active = False
             game.save()
-            return Response({"message": "It's a draw!"}, status=200)
+            message = "It's a draw!"
         else:
-            return Response(
-                {"message": "Move successful. Game in progress."}, status=200
-            )
+            message = "Move was succesfull!. The game continues"
+        return self.create_response(game, message, 200)
 
 
 router = DefaultRouter()

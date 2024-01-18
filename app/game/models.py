@@ -26,9 +26,9 @@ class Game(models.Model):
             if (row or column) and self.board[4 * i] != BLANK:
                 res = True
                 break
-        if (self.board[0] == self.board[4] == self.board[8]) and self.board[0] != BLANK:
+        if (self.board[0] == self.board[4] == self.board[8]) and self.board[4] != BLANK:
             res = True
-        if (self.board[2] == self.board[4] == self.board[6]) and self.board[0] != BLANK:
+        if (self.board[2] == self.board[4] == self.board[6]) and self.board[4] != BLANK:
             res = True
         return res
 
