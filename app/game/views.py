@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 from player.models import Player
 
 from .models import Game, BLANK
-from .serializers import GameSerializer, PlayRequestSerializer, PlayResponseSerializer
+from .serializers import GameSerializer, PlayRequestSerializer
 
 
 class GameView(viewsets.ModelViewSet):
@@ -13,7 +13,7 @@ class GameView(viewsets.ModelViewSet):
     queryset = Game.objects.all()
 
     def create_response(self, game, message, code):
-        response_serializer = PlayResponseSerializer(game)
+        response_serializer = GameSerializer(game)
         data = response_serializer.data
         data["message"] = message
         return Response(data, code)
