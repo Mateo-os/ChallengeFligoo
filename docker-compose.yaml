@@ -9,7 +9,9 @@ services:
       - POSTGRES_USER=postgresuser
       - POSTGRES_PASSWORD=postgrespassword
   web:
-    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    command: > 
+      bash -c "python manage.py migrate 
+      && python manage.py runserver 0.0.0.0:8000"
     build: .
     ports:
       - "8000:8000"

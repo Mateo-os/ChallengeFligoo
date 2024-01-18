@@ -55,6 +55,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+STATIC_URL = "/static/"
+
 ROOT_URLCONF = "app.urls"
 
 TEMPLATES = [
@@ -78,15 +80,15 @@ WSGI_APPLICATION = "app.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-if DEBUG:
+DB = os.environ.get("DB", "SQLITE")
+if DB == "SQLITE":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-else:
+elif DB == "POSTGRES":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -132,12 +134,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-if DEBUG:
-    STATIC_URL = "static/"
-else:
-    STATIC_URL = "/static/"
-    STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
