@@ -15,7 +15,8 @@ class GameView(viewsets.ModelViewSet):
     @action(detail=True, methods=["post", "get"])
     def play(self, request, pk=None):
         game: Game = self.get_object()
-
+        if not game.active:
+            return Response({"error": "This game has ended"}, 400)
         # Validate the incoming data using PlayRequestSerializer
         serializer = PlayRequestSerializer(data=request.data)
         if not serializer.is_valid():
@@ -61,8 +62,12 @@ class GameView(viewsets.ModelViewSet):
 
         # Check for game over conditions
         if game.is_win_state():
+            game.active = False
+            game.save()
             return Response({"message": f"Player {player.name} wins!"}, status=200)
         elif game.is_full():
+            game.active = False
+            game.save()
             return Response({"message": "It's a draw!"}, status=200)
         else:
             return Response(

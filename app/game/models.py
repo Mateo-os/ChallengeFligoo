@@ -14,6 +14,7 @@ class Game(models.Model):
     starting_token = models.CharField(choices=TOKEN_CHOICES, max_length=1)
     board = models.CharField(default=BLANK * 9, max_length=9, blank=True)
     turn = models.IntegerField(default=0, blank=True)
+    active = models.BooleanField(default=True, blank=True)
 
     def is_win_state(self) -> bool:
         """Function to check if board is in a win state,
