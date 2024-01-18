@@ -50,7 +50,7 @@ class GameView(viewsets.ModelViewSet):
         if not (0 <= row <= 8 and 0 <= column <= 8):
             return Response({"error": "Row and column value must be between 1 and 9"})
 
-        if game.board[3 * column + row] != BLANK:
+        if game.board[3 * row + column] != BLANK:
             return Response(
                 {"error": "Invalid move. Cell already occupied."}, status=400
             )

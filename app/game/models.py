@@ -41,5 +41,5 @@ class Game(models.Model):
         if token not in "XO":
             raise Exception
         new_board = list(self.board)
-        new_board[3 * column + row] = token
+        new_board[3 * row + column] = token
         self.board = "".join(new_board)
